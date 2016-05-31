@@ -21,7 +21,7 @@ Released under the MIT License, anybody can freely include this in any type of p
    `xmlns:SD="nativescript-web-image-cache"`.
  - Add the element `SD:SDWebImage`  with the `src` attribute set to the url just like normal image tag wherever image caching is required.   
  - `stretch` attribute can take values specified here
-   -https://docs.nativescript.org/api-reference/modules/_ui_enums_.stretch.html
+   -https://docs.nativescript.org/api-reference/modules/\_ui_enums_.stretch.html
  - To check if an image is loading , require the module, call in
    isLoading method which accepts the image url as parameter.
 
