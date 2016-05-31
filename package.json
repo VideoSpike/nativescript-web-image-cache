@@ -1,0 +1,26 @@
+{
+  "name": "nativescript-web-image-cache",
+  "version": "1.0.0",
+  "description": "A wrapper over SDWebImageCache for iOS remote image caching on NativeScript",
+  "main": "SDWebImageCache.js",
+   "nativescript": {
+    "platforms": {
+      "ios": "1.7.2"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VideoSpike/nativescript-web-image-cache.git"
+  },
+  "keywords": [
+    "nativescript",
+    "image-cache",
+    "ios"
+  ],
+  "author": "Batheja Sumeet",
+  "license": "MIT(https://github.com/VideoSpike/nativescript-web-image-cache/blob/master/LICENSE)",
+  "bugs": {
+    "url": "https://github.com/VideoSpike/nativescript-web-image-cache/issues"
+  },
+  "homepage": "https://github.com/VideoSpike/nativescript-web-image-cache#readme"
+}
