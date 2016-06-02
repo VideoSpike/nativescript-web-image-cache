@@ -9,8 +9,6 @@ var loading=[];
 
 function onStretchPropertyChanged(data) {
 
-    console.log("on stretch property change called!");
-
     var image = data.object;
     switch (data.newValue) {
         case enums.Stretch.aspectFit:
@@ -32,24 +30,21 @@ function onStretchPropertyChanged(data) {
 
 function onSrcPropertySet(data){
 
-    console.log("on source property set called");
+
     var image = data.object;
     var value = data.newValue;
-    console.log(" value of src is " + value);
-    console.log("function is " + image.ios.sd_setImageWithURL );
+
     if (types.isString(value)) {
         value = value.trim();
         image["_url"] = value;
         loading.push(value);
-        //TODO try image.ios if this does not work, but this should work ideally
-        console.log("setting the image to url " + value);
+
         image.ios.sd_setImageWithURLCompleted(value,function(){
             loading.indexOf(value)>-1?(loading[loading.indexOf(value)]=undefined):"";
 
         });
-        console.log("requesting the layout!!");
         image.requestLayout();
-        //TODO call requestLayout if this effs
+
     }
 
 }
@@ -59,7 +54,7 @@ imageCommon.SDWebImage.srcProperty .metadata.onSetNativeValue = onSrcPropertySet
 imageCommon.SDWebImage.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
 
 var SDWebImage=(function (_super) {
-    console.log("inside SDWEBIMage constructor function");
+
     __extends(SDWebImage,_super);
     function SDWebImage(){
         _super.call(this);
@@ -67,8 +62,6 @@ var SDWebImage=(function (_super) {
         this._ios.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
         this._ios.clipsToBounds = true;
         this._ios.userInteractionEnabled = true;
-        /*console.log(" the required function is " + this._ios.sd_setImageWithURL);
-        console.log(" src is " + this.src);*/
     }
 
     Object.defineProperty(SDWebImage.prototype, "ios", {

@@ -15,43 +15,13 @@ var IMAGE = "SDWebImage";
 /*var ISLOADING = "isLoading";*/
 var STRETCH = "stretch";
 var AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
-/*
-function onSrcPropertyChanged(data) {
-    var image = data.object;
-    var value = data.newValue;
-    if (types.isString(value)) {
-        value = value.trim();
-        image.imageSource = null;
-        image["_url"] = value;
-    }
 
-}
-*/
-
-function onSrcSet(data){
-    console.log("onSrcSet called! 1 ");
-    console.log("onSrcSet called! 2 ");
-    console.log("onSrcSet called! 3 ");
-}
 
 var SDWebImage = (function (_super) {
     __extends(SDWebImage, _super);
-    console.log("super constructor called!!");
     function SDWebImage() {
         _super.apply(this, arguments);
     }
-    /*
-    Object.defineProperty(SDWebImage.prototype, "imageSource", {
-        get: function () {
-            return this._getValue(SDWebImage.imageSourceProperty);
-        },
-        set: function (value) {
-            this._setValue(SDWebImage.imageSourceProperty, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    */
     Object.defineProperty(SDWebImage.prototype, "src", {
         get: function () {
             return this._getValue(SDWebImage.srcProperty);
@@ -62,15 +32,7 @@ var SDWebImage = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    /*
-    Object.defineProperty(SDWebImage.prototype, "isLoading", {
-        get: function () {
-            return this._getValue(SDWebImage.isLoadingProperty);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    */
+
     Object.defineProperty(SDWebImage.prototype, "stretch", {
         get: function () {
             return this._getValue(SDWebImage.stretchProperty);
@@ -85,8 +47,6 @@ var SDWebImage = (function (_super) {
     };
 
     SDWebImage.srcProperty = new dependencyObservable.Property(SRC, IMAGE, new proxy.PropertyMetadata(undefined, dependencyObservable.PropertyMetadataSettings.None));
-    /*SDWebImage.imageSourceProperty = new dependencyObservable.Property(IMAGE_SOURCE, IMAGE, new proxy.PropertyMetadata(undefined, dependencyObservable.PropertyMetadataSettings.None));*/
-    /*SDWebImage.isLoadingProperty = new dependencyObservable.Property(ISLOADING, IMAGE, new proxy.PropertyMetadata(false, dependencyObservable.PropertyMetadataSettings.None));*/
     SDWebImage.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, AffectsLayout));
     return SDWebImage;
 }(view.View));
