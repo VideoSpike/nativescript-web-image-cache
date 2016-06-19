@@ -1,11 +1,15 @@
 /**
  * Created by sumeet on 20-05-2016.
  */
-var imageCommon = require("./SDWebImageCache-common");
-var enums = require("ui/enums");
-var types = require("utils/types");
+var imageCommon = require("./WebImageCache-common"),
+    enums = require("ui/enums"),
+    types = require("utils/types"),
+    STRETCH = "stretch",
+    dependencyObservable = require("ui/core/dependency-observable"),
+    proxy = require("ui/core/proxy"),
+    IMAGE = "WebImage",
+    AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 global.moduleMerge(imageCommon, exports);
-var loading=[];
 
 function onStretchPropertyChanged(data) {
 
@@ -37,10 +41,11 @@ function onSrcPropertySet(data){
     if (types.isString(value)) {
         value = value.trim();
         image["_url"] = value;
-        loading.push(value);
+
 
         image.ios.sd_setImageWithURLCompleted(value,function(){
-            loading.indexOf(value)>-1?(loading[loading.indexOf(value)]=undefined):"";
+
+            image.isLoading=false;
 
         });
         image.requestLayout();
@@ -50,13 +55,13 @@ function onSrcPropertySet(data){
 }
 
 
-imageCommon.SDWebImage.srcProperty .metadata.onSetNativeValue = onSrcPropertySet;
-imageCommon.SDWebImage.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
+imageCommon.WebImage.srcProperty.metadata.onSetNativeValue = onSrcPropertySet;
+//imageCommon.SDWebImage.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
 
-var SDWebImage=(function (_super) {
+var WebImage=(function (_super) {
 
-    __extends(SDWebImage,_super);
-    function SDWebImage(){
+    __extends(WebImage,_super);
+    function WebImage(){
         _super.call(this);
         this._ios = new UIImageView();
         this._ios.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
@@ -64,7 +69,20 @@ var SDWebImage=(function (_super) {
         this._ios.userInteractionEnabled = true;
     }
 
-    Object.defineProperty(SDWebImage.prototype, "ios", {
+
+    Object.defineProperty(WebImage.prototype,STRETCH,{
+        get: function () {
+            return this._getValue(WebImage.stretchProperty);
+        },
+        set: function (value) {
+            this._setValue(WebImage.stretchProperty, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WebImage.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, AffectsLayout,onStretchPropertyChanged));
+
+    Object.defineProperty(WebImage.prototype, "ios", {
         get: function () {
             return this._ios;
         },
@@ -73,7 +91,8 @@ var SDWebImage=(function (_super) {
     });
 
 
-    SDWebImage.prototype.onMeasure = function (widthMeasureSpec, heightMeasureSpec) {
+
+    WebImage.prototype.onMeasure = function (widthMeasureSpec, heightMeasureSpec) {
         var utils = require("utils/utils");
         var width = utils.layout.getMeasureSpecSize(widthMeasureSpec);
         var widthMode = utils.layout.getMeasureSpecMode(widthMeasureSpec);
@@ -101,7 +120,7 @@ var SDWebImage=(function (_super) {
         var heightAndState = view.View.resolveSizeAndState(measureHeight, height, heightMode, 0);
         this.setMeasuredDimension(widthAndState, heightAndState);
     };
-    SDWebImage.computeScaleFactor = function (measureWidth, measureHeight, widthIsFinite, heightIsFinite, nativeWidth, nativeHeight, imageStretch) {
+    WebImage.computeScaleFactor = function (measureWidth, measureHeight, widthIsFinite, heightIsFinite, nativeWidth, nativeHeight, imageStretch) {
         var scaleW = 1;
         var scaleH = 1;
         if ((imageStretch === enums.Stretch.aspectFill || imageStretch === enums.Stretch.aspectFit || imageStretch === enums.Stretch.fill) &&
@@ -130,8 +149,8 @@ var SDWebImage=(function (_super) {
         return { width: scaleW, height: scaleH };
     };
 
-    return SDWebImage;
-}(imageCommon.SDWebImage));
+    return WebImage;
+}(imageCommon.WebImage));
 
 function clearCache(){
     var imageCache= SDImageCache.sharedImageCache();
@@ -140,12 +159,5 @@ function clearCache(){
 }
 
 
-exports.SDWebImage= SDWebImage;
-exports.isLoading=function(imageURL){
-    if(types.isString(imageURL))
-  if(loading.indexOf(imageURL.trim())>-1){
-    return true;
-  }
-    return false;
-};
-exports.clearCache=clearCache;
+exports.WebImage = WebImage;
+exports.clearCache = clearCache;

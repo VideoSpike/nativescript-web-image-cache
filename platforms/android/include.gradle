@@ -1,0 +1,11 @@
+android {
+	productFlavors {
+		"nativescript-web-image-cache" {
+			dimension "nativescript-web-image-cache"
+		}
+	}
+}
+
+dependencies {
+	compile "com.facebook.fresco:fresco:0.11.0"
+}
