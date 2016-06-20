@@ -105,7 +105,7 @@ var WebImage=(function (_super) {
         var finiteWidth = widthMode !== utils.layout.UNSPECIFIED;
         var finiteHeight = heightMode !== utils.layout.UNSPECIFIED;
         if (nativeWidth !== 0 && nativeHeight !== 0 && (finiteWidth || finiteHeight)) {
-            var scale = SDWebImage.computeScaleFactor(width, height, finiteWidth, finiteHeight, nativeWidth, nativeHeight, this.stretch);
+            var scale = WebImage.computeScaleFactor(width, height, finiteWidth, finiteHeight, nativeWidth, nativeHeight, this.stretch);
             var resultW = Math.floor(nativeWidth * scale.width);
             var resultH = Math.floor(nativeHeight * scale.height);
             measureWidth = finiteWidth ? Math.min(resultW, width) : resultW;
