@@ -10,6 +10,7 @@ var imageCommon = require("./WebImageCache-common"),
     IMAGE = "WebImage",
     utils = require("utils/utils"),
     STRETCH = "stretch",
+    fs=require("file-system"),
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
 global.moduleMerge(imageCommon, exports);
@@ -68,11 +69,24 @@ function onSrcPropertySet(data){
 
     if (types.isString(value)) {
         value = value.trim();
+        if(utils.isFileOrResourcePath(value) || 0===value.indexOf("http")){
+            image.isLoading=true;
+            var fileName="";
+            if(0===value.indexOf("~/")){
+                fileName=fs.path.join(fs.knownFolders.currentApp().path, value.replace("~/", ""));
+                fileName="file:"+ fileName;
+            }else if(0==value.indexOf("res")){
+                fileName=value;
+                var res = utils.ad.getApplicationContext().getResources();
+                var resName = fileName.substr(utils.RESOURCE_PREFIX.length);
+                var identifier = res.getIdentifier(resName, 'drawable', utils.ad.getApplication().getPackageName());
+                fileName="res:/" + identifier;
+            }else if(0===value.indexOf("http")){
+                image.isLoading=true;
+                fileName=value;
+            }
 
-        if (!utils.isFileOrResourcePath(value)) {
-
-            image.android.setImageURI(android.net.Uri.parse(value), null);
-
+            image.android.setImageURI(android.net.Uri.parse(fileName), null);
 
             var controllerListener=new ProxyBaseControllerListener();
             controllerListener.setNSCachedImage(image);
@@ -80,13 +94,14 @@ function onSrcPropertySet(data){
 
             var controller = com.facebook.drawee.backends.pipeline.Fresco.newDraweeControllerBuilder().
                 setControllerListener(controllerListener)
-                .setUri(android.net.Uri.parse(value))
+                .setUri(android.net.Uri.parse(fileName))
                 .build();
             image.android.setController(controller);
 
             image.requestLayout();
-        }else {
-                throw new Error("Path \"" + "\" is not a valid file or resource.");
+
+        }else{
+            throw new Error("Path \"" + "\" is not a valid file or resource.");
         }
     }
 

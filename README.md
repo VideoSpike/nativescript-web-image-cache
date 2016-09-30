@@ -2,7 +2,6 @@
 
 #Nativescript web image cache
 A minimalistic NativeScript plugin that wraps just the caching functionality of  SDWebImageCache library for IOS and Facebook Fresco for android.
-**Note - It cannot be used to display local images, only URLS work, for local images, use NS Image tag**
 
 ## License
 Released under the MIT License, anybody can freely include this in any type of program -- However, if in need of support contract, changes, enhancements and/or a commercial license please contact me (sumeet@videospike.com).
@@ -11,7 +10,7 @@ Released under the MIT License, anybody can freely include this in any type of p
 
     tns plugin add nativescript-web-image-cache
 
-** Tested on NativeScript 2.0, if any problems while running on previous versions, please update .This version of plugin has breaking changes, if you are using version 1.0.3 of this plugin , please migrate, it is easy to migrate and this version of plugin supports android as well , if you still prefer running on the previous version, use `tns plugin add nativescript-web-image-cache@1.0.3`.**
+** Tested on NativeScript 2.3, if any problems while running on previous versions, please update .This version of plugin has breaking changes, if you are using version 1.0.3 of this plugin , please migrate, it is easy to migrate and this version of plugin supports android as well , if you still prefer running on the previous version, use `tns plugin add nativescript-web-image-cache@1.0.3`.**
 
 ## Usage
 

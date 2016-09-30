@@ -8,6 +8,8 @@ var imageCommon = require("./WebImageCache-common"),
     dependencyObservable = require("ui/core/dependency-observable"),
     proxy = require("ui/core/proxy"),
     IMAGE = "WebImage",
+    utils = require("utils/utils"),
+    imageSource = require("image-source"),
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 global.moduleMerge(imageCommon, exports);
 
@@ -32,7 +34,7 @@ function onStretchPropertyChanged(data) {
 }
 
 
-function onSrcPropertySet(data){
+function onSrcPropertySet(data) {
 
 
     var image = data.object;
@@ -40,16 +42,32 @@ function onSrcPropertySet(data){
 
     if (types.isString(value)) {
         value = value.trim();
-        image["_url"] = value;
+        if (0 === value.indexOf("http")) {
+            image.isLoading = true;
+            image["_url"] = value;
+            image.ios.sd_setImageWithURLCompleted(value, function () {
+                image.isLoading = false;
 
+            });
+        } else if (utils.isFileOrResourcePath(value)) {
+            image.isLoading = true;
+            var source = new imageSource.ImageSource();
 
-        image.ios.sd_setImageWithURLCompleted(value,function(){
+            if (0 === value.indexOf(utils.RESOURCE_PREFIX)) {
+                var path = value.substr(utils.RESOURCE_PREFIX.length);
+                source.fromResource(path).then(function () {
+                    image.isLoading = false;
+                    image.ios.image = source.ios;
+                });
+            } else {
+                source.fromFile(value).then(function () {
+                    image.isLoading = false;
+                    image.ios.image = source.ios;
+                });
+            }
 
-            image.isLoading=false;
-
-        });
+        }
         image.requestLayout();
-
     }
 
 }
@@ -58,10 +76,10 @@ function onSrcPropertySet(data){
 imageCommon.WebImage.srcProperty.metadata.onSetNativeValue = onSrcPropertySet;
 //imageCommon.SDWebImage.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
 
-var WebImage=(function (_super) {
+var WebImage = (function (_super) {
 
-    __extends(WebImage,_super);
-    function WebImage(){
+    __extends(WebImage, _super);
+    function WebImage() {
         _super.call(this);
         this._ios = new UIImageView();
         this._ios.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
@@ -70,7 +88,7 @@ var WebImage=(function (_super) {
     }
 
 
-    Object.defineProperty(WebImage.prototype,STRETCH,{
+    Object.defineProperty(WebImage.prototype, STRETCH, {
         get: function () {
             return this._getValue(WebImage.stretchProperty);
         },
@@ -80,7 +98,7 @@ var WebImage=(function (_super) {
         enumerable: true,
         configurable: true
     });
-    WebImage.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, AffectsLayout,onStretchPropertyChanged));
+    WebImage.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, AffectsLayout, onStretchPropertyChanged));
 
     Object.defineProperty(WebImage.prototype, "ios", {
         get: function () {
@@ -91,15 +109,14 @@ var WebImage=(function (_super) {
     });
 
 
-
     WebImage.prototype.onMeasure = function (widthMeasureSpec, heightMeasureSpec) {
         var utils = require("utils/utils");
         var width = utils.layout.getMeasureSpecSize(widthMeasureSpec);
         var widthMode = utils.layout.getMeasureSpecMode(widthMeasureSpec);
         var height = utils.layout.getMeasureSpecSize(heightMeasureSpec);
         var heightMode = utils.layout.getMeasureSpecMode(heightMeasureSpec);
-        var nativeWidth = this._ios ? (this._ios.image?this._ios.image.size.width:0): 0;
-        var nativeHeight = this._ios ? (this._ios.image?this._ios.image.size.height:0): 0;
+        var nativeWidth = this._ios ? (this._ios.image ? this._ios.image.size.width : 0) : 0;
+        var nativeHeight = this._ios ? (this._ios.image ? this._ios.image.size.height : 0) : 0;
         var measureWidth = Math.max(nativeWidth, this.minWidth);
         var measureHeight = Math.max(nativeHeight, this.minHeight);
         var finiteWidth = widthMode !== utils.layout.UNSPECIFIED;
@@ -112,8 +129,8 @@ var WebImage=(function (_super) {
             measureHeight = finiteHeight ? Math.min(resultH, height) : resultH;
             var trace = require("trace");
             trace.write("Image stretch: " + this.stretch +
-            ", nativeWidth: " + nativeWidth +
-            ", nativeHeight: " + nativeHeight, trace.categories.Layout);
+                ", nativeWidth: " + nativeWidth +
+                ", nativeHeight: " + nativeHeight, trace.categories.Layout);
         }
         var view = require("ui/core/view");
         var widthAndState = view.View.resolveSizeAndState(measureWidth, width, widthMode, 0);
@@ -146,14 +163,14 @@ var WebImage=(function (_super) {
                 }
             }
         }
-        return { width: scaleW, height: scaleH };
+        return {width: scaleW, height: scaleH};
     };
 
     return WebImage;
 }(imageCommon.WebImage));
 
-function clearCache(){
-    var imageCache= SDImageCache.sharedImageCache();
+function clearCache() {
+    var imageCache = SDImageCache.sharedImageCache();
     imageCache.clearMemory();
     imageCache.clearDisk();
 }
