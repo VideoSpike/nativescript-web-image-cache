@@ -2,7 +2,7 @@
   "name": "nativescript-web-image-cache",
   "version": "2.1.1",
   "description": "A wrapper over SDWebImageCache for iOS and Facebook Fresco for android for remote image caching on NativeScript",
-  "main": "WebImageCache.js",
+  "main": "WebImageCache",
   "nativescript": {
     "platforms": {
       "android": "2.3.0",
@@ -27,33 +27,5 @@
     "url": "https://github.com/VideoSpike/nativescript-web-image-cache/issues"
   },
   "homepage": "https://github.com/VideoSpike/nativescript-web-image-cache#readme",
-  "gitHead": "87071899c625a8ac3e2baf75a15ae46fdc60b8a8",
-  "_id": "nativescript-web-image-cache@2.0.1",
-  "scripts": {},
-  "_shasum": "ee80a1d6b1cd3d1df3edf50f4b20516bbb410904",
-  "_from": "..\\node_modules\\nativescript-web-image-cache",
-  "_npmVersion": "2.15.1",
-  "_nodeVersion": "4.4.3",
-  "_npmUser": {
-    "name": "bathejasumeet",
-    "email": "sumeet@videospike.com"
-  },
-  "dist": {
-    "shasum": "6ee5a05193f461350b0d99a7b335fd3d39b4db07",
-    "tarball": "https://registry.npmjs.org/nativescript-web-image-cache/-/nativescript-web-image-cache-2.0.1.tgz"
-  },
-  "maintainers": [
-    {
-      "name": "bathejasumeet",
-      "email": "sumeet@videospike.com"
-    }
-  ],
-  "_npmOperationalInternal": {
-    "host": "packages-16-east.internal.npmjs.com",
-    "tmp": "tmp/nativescript-web-image-cache-2.0.1.tgz_1466405792063_0.14694003877229989"
-  },
-  "directories": {},
-  "_resolved": "file:..\\node_modules\\nativescript-web-image-cache",
-  "readme": "\n\n#Nativescript web image cache\nA minimalistic NativeScript plugin that wraps just the caching functionality of  SDWebImageCache library for IOS and Facebook Fresco for android.\n**Note - It cannot be used to display local images, only URLS work**\n\n## License\nReleased under the MIT License, anybody can freely include this in any type of program -- However, if in need of support contract, changes, enhancements and/or a commercial license please contact me (sumeet@videospike.com).\n\n## Installation \n\n    tns plugin add nativescript-web-image-cache\n\n** Tested on NativeScript 2.0, if any problems while running on previous versions, please update .This version of plugin has breaking changes, if you are using version 1.0.3 of this plugin , please migrate, it is easy to migrate and this version of plugin supports android as well , if you still prefer running on the previous version, use `tns plugin add nativescript-web-image-cache@1.0.3`.**\n\n## Usage\n\n**IF on android, need to initialise the plugin before using or clearing the cache, initialisation not required for iOS**\n\nInitialising on android - in app.js\n\n    var imageCache = require(\"nativescript-web-image-cache\");\n    if (application.android) {\n        application.onLaunch = function (intent) {\n    \t        imageCache.initialize();\n        };\n    }\n\n Caching the images\n\t\n - To the opening page tag of the xml, add\n   `xmlns:IC=\"nativescript-web-image-cache\"`.\n - Add the element `IC:WebImage`  with the `src` attribute set to the url just like normal image tag wherever image caching is required.   \n - `stretch` attribute can take values specified here\n   -https://docs.nativescript.org/api-reference/modules/\\_ui_enums_.stretch.html\n - To check if an image is loading , get the reference to the WebImage view by using `page.getViewById(\"myWebImage\")` , and check the isLoading property (same as that of NativeScript Image isLoading property).\n\nClearing the cache\n\n- Require the module, call the method `clearCache()`  , default time is same for SDWebImageCache which is 7 days, and for Fresco is 60 days,  after which cache is automatically cleared.\n\n##Example\ncaching : \n```\n    <Page xmlns:IC=\"nativescript-web-image-cache\">\n        <GridLayout rows='*' columns='*'> \n\t        <IC:WebImage stretch=\"fill\" row=\"0\"\n\t         col=\"0\"  id=\"my-image-1\"\n\t         src=\"http://www.newyorker.com/wp-\n\t         content/uploads/2014/08/Stokes-Hello-\n\t         Kitty2-1200.jpg\">\n\t         </IC:WebImage>  \n        </GridLayout>\n    </Page>\n```\nchecking if image is loading :\n```\nvar imageCacheModule=require(\"nativescript-web-image-cache\");\n\nvar myImage1 = page.getViewById(\"my-image-1\"),\n\tisLoading = myImage1.isLoading; \n\n```\nclear the cache :\n```\nvar imageCacheModule=require(\"nativescript-web-image-cache\");\nimageCacheModule.clearCache();\n```\n**for android, you need to initialize in the application onlaunch event before clearing the cache**\n\n \n\n\n",
-  "readmeFilename": "README.md"
+  "typings": "WebImageCache.d.ts"
 }
