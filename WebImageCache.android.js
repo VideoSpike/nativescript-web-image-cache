@@ -20,7 +20,7 @@ global.moduleMerge(imageCommon, exports);
 var ProxyBaseControllerListener=com.facebook.drawee.controller.BaseControllerListener.extend({
     _NSCachedImage:undefined,
     setNSCachedImage:function(img){
-      this._NSCachedImage=img;
+        this._NSCachedImage=img;
     },
     onFinalImageSet:function(id,imageInfo,anim){
         if(undefined!=this._NSCachedImage){
@@ -39,9 +39,18 @@ var ProxyBaseControllerListener=com.facebook.drawee.controller.BaseControllerLis
 
 function onStretchPropertyChanged(data) {
 
-    var image = data.object,
-        draweeHierarchy=image.android.getHierarchy();
-    switch (data.newValue) {
+    var image = data.object;
+    if(!image.android){
+        return;
+    }
+
+    var draweeHierarchy=image.android.getHierarchy();
+
+    setNativeStretch(draweeHierarchy,data.newValue);
+}
+
+function setNativeStretch(draweeHierarchy,stretch){
+    switch (stretch) {
         case enums.Stretch.aspectFit:
             draweeHierarchy.setActualImageScaleType(com.facebook.drawee.drawable.ScalingUtils.ScaleType.FIT_CENTER);
             break;
@@ -59,12 +68,19 @@ function onStretchPropertyChanged(data) {
 }
 
 
-
-
 function onSrcPropertySet(data){
     var image = data.object,
         value=data.newValue;
+    if(!image.android){
+        return
+    }
 
+    setSource(image,value);
+
+}
+
+
+function setSource(image,value){
     image.android.setImageURI(null, null);
 
     if (types.isString(value)) {
@@ -106,16 +122,17 @@ function onSrcPropertySet(data){
     }
 
 }
+
 imageCommon.WebImage.srcProperty.metadata.onSetNativeValue = onSrcPropertySet;
 
 
 var WebImage=(function (_super) {
 
 
-	
-	__extends(WebImage,_super);
-	
-	
+
+    __extends(WebImage,_super);
+
+
 
     Object.defineProperty(WebImage.prototype,STRETCH,{
         get: function () {
@@ -131,9 +148,18 @@ var WebImage=(function (_super) {
 
     function WebImage(){
         _super.apply(this,arguments);
-        this._android = new com.facebook.drawee.view.SimpleDraweeView(application.android.currentContext);
-        this._android.getHierarchy().setActualImageScaleType(com.facebook.drawee.drawable.ScalingUtils.ScaleType.CENTER);
     }
+
+    WebImage.prototype._createUI = function(){
+        this._android = new com.facebook.drawee.view.SimpleDraweeView(this._context);
+        this._android.getHierarchy().setActualImageScaleType(com.facebook.drawee.drawable.ScalingUtils.ScaleType.CENTER);
+        if(undefined!==this.src){
+            setSource(this,this.src);
+        }
+        if(undefined!==this.stretch){
+            setNativeStretch(this._android.getHierarchy(),this.stretch);
+        }
+    };
 
     Object.defineProperty(WebImage.prototype, "android", {
         get: function () {
