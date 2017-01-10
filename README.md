@@ -11,7 +11,7 @@ Released under the MIT License, anybody can freely include this in any type of p
 
     tns plugin add nativescript-web-image-cache
 
-** Tested on NativeScript 2.3, if any problems while running on previous versions, please update .This version of plugin has breaking changes, if you are using version 1.0.3 of this plugin , please migrate, it is easy to migrate and this version of plugin supports android as well , if you still prefer running on the previous version, use `tns plugin add nativescript-web-image-cache@1.0.3`.**
+** Tested on NativeScript 2.3+, if any problems while running on previous versions, please update .This version of plugin has breaking changes, if you are using version 1.0.3 of this plugin , please migrate, it is easy to migrate and this version of plugin supports android as well , if you still prefer running on the previous version, use `tns plugin add nativescript-web-image-cache@1.0.3`.**
 
 ## Usage
 
@@ -22,12 +22,12 @@ Initialising on android - in app.js
     var imageCache = require("nativescript-web-image-cache");
     if (application.android) {
         application.onLaunch = function (intent) {
-    	        imageCache.initialize();
+                imageCache.initialize();
         };
     }
 
  Caching the images
-	
+    
  - To the opening page tag of the xml, add
    `xmlns:IC="nativescript-web-image-cache"`.
  - Add the element `IC:WebImage`  with the `src` attribute set to the url just like normal image tag wherever image caching is required.   
@@ -44,12 +44,10 @@ caching :
 ```
     <Page xmlns:IC="nativescript-web-image-cache">
         <GridLayout rows='*' columns='*'> 
-	        <IC:WebImage stretch="fill" row="0"
-	         col="0"  id="my-image-1"
-	         src="http://www.newyorker.com/wp-
-	         content/uploads/2014/08/Stokes-Hello-
-	         Kitty2-1200.jpg">
-	         </IC:WebImage>  
+            <IC:WebImage stretch="fill" row="0"
+             col="0"  id="my-image-1"
+             src="#image-url">
+             </IC:WebImage>  
         </GridLayout>
     </Page>
 ```
@@ -58,7 +56,7 @@ checking if image is loading :
 var imageCacheModule=require("nativescript-web-image-cache");
 
 var myImage1 = page.getViewById("my-image-1"),
-	isLoading = myImage1.isLoading; 
+    isLoading = myImage1.isLoading; 
 
 ```
 clear the cache :
