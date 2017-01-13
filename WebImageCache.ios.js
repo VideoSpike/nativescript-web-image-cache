@@ -178,3 +178,11 @@ function clearCache() {
 
 exports.WebImage = WebImage;
 exports.clearCache = clearCache;
+exports.initializeOnAngular = function(){
+    var _elementRegistry = require("nativescript-angular/element-registry");
+
+    _elementRegistry.registerElement("WebImage", function () {
+        return require("nativescript-web-image-cache").WebImage;
+    });
+
+};

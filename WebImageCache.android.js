@@ -172,12 +172,21 @@ var WebImage=(function (_super) {
 }(imageCommon.WebImage));
 
 
-
+function initiialize(){
+    com.facebook.drawee.backends.pipeline.Fresco.initialize(application.android.context);
+}
 
 exports.WebImage=WebImage;
 exports.clearCache=function(){
     com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
 };
-exports.initialize=function(){
-    com.facebook.drawee.backends.pipeline.Fresco.initialize(application.android.context);
+exports.initialize=initiialize;
+
+exports.initializeOnAngular = function(){
+    var _elementRegistry = require("nativescript-angular/element-registry");
+
+    _elementRegistry.registerElement("WebImage", function () {
+        return require("nativescript-web-image-cache").WebImage;
+    });
+    initiialize();
 };
