@@ -1,6 +1,6 @@
 {
   "name": "nativescript-web-image-cache",
-  "version": "2.1.2",
+  "version": "3.1.0",
   "description": "A wrapper over SDWebImageCache for iOS and Facebook Fresco for android for remote image caching on NativeScript",
   "main": "WebImageCache",
   "nativescript": {
