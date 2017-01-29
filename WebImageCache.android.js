@@ -11,6 +11,7 @@ var imageCommon = require("./WebImageCache-common"),
     utils = require("utils/utils"),
     STRETCH = "stretch",
     fs=require("file-system"),
+    isInitialized = false, 
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
 global.moduleMerge(imageCommon, exports);
@@ -183,10 +184,13 @@ exports.clearCache=function(){
 exports.initialize=initiialize;
 
 exports.initializeOnAngular = function(){
-    var _elementRegistry = require("nativescript-angular/element-registry");
+	if(false === isInitialized){
+    	var _elementRegistry = require("nativescript-angular/element-registry");
 
-    _elementRegistry.registerElement("WebImage", function () {
-        return require("nativescript-web-image-cache").WebImage;
-    });
-    initiialize();
+    	_elementRegistry.registerElement("WebImage", function () {
+    	    return require("nativescript-web-image-cache").WebImage;
+    	});
+    	initiialize();
+		isInitialized=true;
+	}
 };
