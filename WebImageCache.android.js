@@ -10,13 +10,12 @@ var imageCommon = require("./WebImageCache-common"),
     IMAGE = "WebImage",
     utils = require("utils/utils"),
     STRETCH = "stretch",
+    ROUNDED = "rounded",
     fs=require("file-system"),
     isInitialized = false, 
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
 global.moduleMerge(imageCommon, exports);
-
-
 
 var ProxyBaseControllerListener=com.facebook.drawee.controller.BaseControllerListener.extend({
     _NSCachedImage:undefined,
@@ -35,8 +34,22 @@ var ProxyBaseControllerListener=com.facebook.drawee.controller.BaseControllerLis
     }
 });
 
-
-
+function onRoundedPropertyChanged(data) {
+    var image = data.object;
+    if(!image.android){
+        return;
+    }
+    var draweeHierarchy=image.android.getHierarchy();
+    setRounded(draweeHierarchy,data.newValue);
+}
+function setRounded(draweeHierarchy, rounded){
+    var roundingParams = new com.facebook.drawee.generic.RoundingParams.fromCornersRadius(0);
+    if(rounded)
+        roundingParams.setRoundAsCircle(true);
+    else
+        roundingParams.setRoundAsCircle(false);
+    draweeHierarchy.setRoundingParams(roundingParams);
+}
 
 function onStretchPropertyChanged(data) {
 
@@ -49,7 +62,6 @@ function onStretchPropertyChanged(data) {
 
     setNativeStretch(draweeHierarchy,data.newValue);
 }
-
 function setNativeStretch(draweeHierarchy,stretch){
     switch (stretch) {
         case enums.Stretch.aspectFit:
@@ -68,7 +80,6 @@ function setNativeStretch(draweeHierarchy,stretch){
     }
 }
 
-
 function onSrcPropertySet(data){
     var image = data.object,
         value=data.newValue;
@@ -79,8 +90,6 @@ function onSrcPropertySet(data){
     setSource(image,value);
 
 }
-
-
 function setSource(image,value){
     image.android.setImageURI(null, null);
 
@@ -134,6 +143,17 @@ var WebImage=(function (_super) {
     __extends(WebImage,_super);
 
 
+    Object.defineProperty(WebImage.prototype,ROUNDED,{
+        get: function () {
+            return this._getValue(WebImage.roundedProperty);
+        },
+        set: function (value) {
+            this._setValue(WebImage.roundedProperty, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WebImage.roundedProperty = new dependencyObservable.Property(ROUNDED, IMAGE, new proxy.PropertyMetadata(false, AffectsLayout,onRoundedPropertyChanged));
 
     Object.defineProperty(WebImage.prototype,STRETCH,{
         get: function () {
@@ -159,6 +179,9 @@ var WebImage=(function (_super) {
         }
         if(undefined!==this.stretch){
             setNativeStretch(this._android.getHierarchy(),this.stretch);
+        }
+        if(undefined!==this.rounded){
+            setRounded(this._android.getHierarchy(),this.rounded);
         }
     };
 
