@@ -92,7 +92,6 @@ function onSrcPropertySet(data){
 }
 function setSource(image,value){
     image.android.setImageURI(null, null);
-
     if (types.isString(value)) {
         value = value.trim();
         if(utils.isFileOrResourcePath(value) || 0===value.indexOf("http")){
@@ -110,6 +109,8 @@ function setSource(image,value){
             }else if(0===value.indexOf("http")){
                 image.isLoading=true;
                 fileName=value;
+            }else if(fs.File.exists(value)){
+                  fileName="file:"+ value;
             }
 
             image.android.setImageURI(android.net.Uri.parse(fileName), null);
@@ -127,6 +128,7 @@ function setSource(image,value){
             image.requestLayout();
 
         }else{
+            console.log('not match shidi');
             throw new Error("Path \"" + "\" is not a valid file or resource.");
         }
     }
