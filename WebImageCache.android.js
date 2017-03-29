@@ -10,12 +10,14 @@ var imageCommon = require("./WebImageCache-common"),
     IMAGE = "WebImage",
     utils = require("utils/utils"),
     STRETCH = "stretch",
-    ROUNDED = "rounded",
     fs=require("file-system"),
-    isInitialized = false, 
+    isInitialized = false,
+    appSettings = require("application-settings"),
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
 global.moduleMerge(imageCommon, exports);
+
+
 
 var ProxyBaseControllerListener=com.facebook.drawee.controller.BaseControllerListener.extend({
     _NSCachedImage:undefined,
@@ -34,22 +36,8 @@ var ProxyBaseControllerListener=com.facebook.drawee.controller.BaseControllerLis
     }
 });
 
-function onRoundedPropertyChanged(data) {
-    var image = data.object;
-    if(!image.android){
-        return;
-    }
-    var draweeHierarchy=image.android.getHierarchy();
-    setRounded(draweeHierarchy,data.newValue);
-}
-function setRounded(draweeHierarchy, rounded){
-    var roundingParams = new com.facebook.drawee.generic.RoundingParams.fromCornersRadius(0);
-    if(rounded)
-        roundingParams.setRoundAsCircle(true);
-    else
-        roundingParams.setRoundAsCircle(false);
-    draweeHierarchy.setRoundingParams(roundingParams);
-}
+
+
 
 function onStretchPropertyChanged(data) {
 
@@ -62,6 +50,7 @@ function onStretchPropertyChanged(data) {
 
     setNativeStretch(draweeHierarchy,data.newValue);
 }
+
 function setNativeStretch(draweeHierarchy,stretch){
     switch (stretch) {
         case enums.Stretch.aspectFit:
@@ -80,16 +69,67 @@ function setNativeStretch(draweeHierarchy,stretch){
     }
 }
 
+
 function onSrcPropertySet(data){
     var image = data.object,
         value=data.newValue;
     if(!image.android){
-        return
+        return;
     }
 
     setSource(image,value);
 
 }
+
+
+function onPlaceholderPropertyChanged(image){
+    var image = data.object,
+        value = data.newValue,
+        genericDraweeHierarchy = null,
+        imageIdentifier = "",
+        drawable = null;
+
+    if(!image.android){
+        return;
+    }
+
+    if (types.isString(value)) {
+        value = value.trim();
+        if(0===value.indexOf("~/")){
+
+            imageIdentifier = getAbsolutePathOfFile(value);
+            drawable = android.graphics.drawable.Drawable.createFromPath(imageIdentifier);
+
+        }else if(0==value.indexOf("res")){
+
+            imageIdentifier = getResourceIDOfFile(value);
+            drawable =  utils.ad.getApplicationContext().getResources().getDrawable(imageIdentifier);
+        }
+
+    }
+
+    if(null!==drawable) {
+        genericDraweeHierarchy = image.android.getHierarchy();
+        hierarchy.setPlaceholderImage(/*Drawable*/);
+    }
+
+}
+
+function getAbsolutePathOfFile(value){
+    var fileName="";
+    fileName=fs.path.join(fs.knownFolders.currentApp().path, value.replace("~/", ""));
+    return "file:"+ fileName;
+}
+
+function getResourceIDOfFile(fileName){
+    var res = utils.ad.getApplicationContext().getResources();
+    var resName = fileName.substr(utils.RESOURCE_PREFIX.length);
+    var identifier = res.getIdentifier(resName, 'drawable', utils.ad.getApplication().getPackageName());
+    return "res:/" + identifier;
+}
+
+
+
 function setSource(image,value){
     image.android.setImageURI(null, null);
 
@@ -99,14 +139,19 @@ function setSource(image,value){
             image.isLoading=true;
             var fileName="";
             if(0===value.indexOf("~/")){
-                fileName=fs.path.join(fs.knownFolders.currentApp().path, value.replace("~/", ""));
-                fileName="file:"+ fileName;
+
+                fileName=getAbsolutePathOfFile(value);
+
+                //fileName=fs.path.join(fs.knownFolders.currentApp().path, value.replace("~/", ""));
+                //fileName="file:"+ fileName;
             }else if(0==value.indexOf("res")){
-                fileName=value;
-                var res = utils.ad.getApplicationContext().getResources();
-                var resName = fileName.substr(utils.RESOURCE_PREFIX.length);
-                var identifier = res.getIdentifier(resName, 'drawable', utils.ad.getApplication().getPackageName());
-                fileName="res:/" + identifier;
+
+               fileName=getResourceIDOfFile(value);
+               // fileName=value;
+               // var res = utils.ad.getApplicationContext().getResources();
+               // var resName = fileName.substr(utils.RESOURCE_PREFIX.length);
+               // var identifier = res.getIdentifier(resName, 'drawable', utils.ad.getApplication().getPackageName());
+               // fileName="res:/" + identifier;
             }else if(0===value.indexOf("http")){
                 image.isLoading=true;
                 fileName=value;
@@ -133,7 +178,10 @@ function setSource(image,value){
 
 }
 
+
 imageCommon.WebImage.srcProperty.metadata.onSetNativeValue = onSrcPropertySet;
+imageCommon.WebImage.placeholderProperty.metadata.onSetNativeValue = onPlaceholderPropertyChanged;
+
 
 
 var WebImage=(function (_super) {
@@ -143,17 +191,6 @@ var WebImage=(function (_super) {
     __extends(WebImage,_super);
 
 
-    Object.defineProperty(WebImage.prototype,ROUNDED,{
-        get: function () {
-            return this._getValue(WebImage.roundedProperty);
-        },
-        set: function (value) {
-            this._setValue(WebImage.roundedProperty, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    WebImage.roundedProperty = new dependencyObservable.Property(ROUNDED, IMAGE, new proxy.PropertyMetadata(false, AffectsLayout,onRoundedPropertyChanged));
 
     Object.defineProperty(WebImage.prototype,STRETCH,{
         get: function () {
@@ -180,9 +217,6 @@ var WebImage=(function (_super) {
         if(undefined!==this.stretch){
             setNativeStretch(this._android.getHierarchy(),this.stretch);
         }
-        if(undefined!==this.rounded){
-            setRounded(this._android.getHierarchy(),this.rounded);
-        }
     };
 
     Object.defineProperty(WebImage.prototype, "android", {
@@ -195,6 +229,33 @@ var WebImage=(function (_super) {
     return WebImage;
 }(imageCommon.WebImage));
 
+
+
+function setCacheLimit(numberOfDays) {
+
+    var noOfSecondsInAMinute = 60,
+        noOfMinutesInAHour = 60,
+        noOfHoursInADay = 24,
+        noOfSecondsADay=noOfSecondsInAMinute*noOfMinutesInAHour*noOfHoursInADay,
+        noOfSecondsInDays = noOfSecondsADay * numberOfDays,
+        currentSeconds = Math.round(new Date().getTime() / 1000),
+        referenceTime = 0;
+
+
+    if (true == appSettings.getBoolean("isAppOpenedFirstTime") || undefined == appSettings.getBoolean("isAppOpenedFirstTime") || null == appSettings.getBoolean("isAppOpenedFirstTime")) {
+        appSettings.setBoolean("isAppOpenedFirstTime", false);
+        com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
+        appSettings.setNumber("cacheTimeReference", currentSeconds);
+    } else {
+        referenceTime = appSettings.getNumber("cacheTimeReference");
+        if (null == referenceTime || undefined == referenceTime) {
+            appSettings.setNumber("cacheTimeReference", currentSeconds);
+        } else if ((currentSeconds - referenceTime) > noOfSecondsInDays) {
+            clearCache();
+            appSettings.setNumber("cacheTimeReference", currentSeconds);
+        }
+    }
+}
 
 function initiialize(){
     com.facebook.drawee.backends.pipeline.Fresco.initialize(application.android.context);
@@ -217,3 +278,6 @@ exports.initializeOnAngular = function(){
 		isInitialized=true;
 	}
 };
+
+
+exports.setCacheLimit = setCacheLimit;
