@@ -14,6 +14,7 @@ var imageCommon = require("./WebImageCache-common"),
     PLACEHOLDER = "placeholder",
     PLACEHOLDERSTRETCH = "placeholderStretch",
     fs=require("file-system"),
+    appSettings = require("application-settings"),
     isInitialized = false, 
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
@@ -299,6 +300,7 @@ function getPlaceholderImageDrawable(value){
                 var res = utils.ad.getApplicationContext().getResources();
                 var resName = fileName.substr(utils.RESOURCE_PREFIX.length);
                 var identifier = res.getIdentifier(resName, 'drawable', utils.ad.getApplication().getPackageName());
+                console.log("resource identifier is " + identifier);
                 drawable = res.getDrawable(identifier);
             }
 
@@ -308,6 +310,34 @@ function getPlaceholderImageDrawable(value){
 
     return drawable;
 
+}
+
+
+
+function setCacheLimit(numberOfDays) {
+
+    var noOfSecondsInAMinute = 60,
+        noOfMinutesInAHour = 60,
+        noOfHoursInADay = 24,
+        noOfSecondsADay=noOfSecondsInAMinute*noOfMinutesInAHour*noOfHoursInADay,
+        noOfSecondsInDays = noOfSecondsADay * numberOfDays,
+        currentSeconds = Math.round(new Date().getTime() / 1000),
+        referenceTime = 0;
+
+
+    if (true == appSettings.getBoolean("isAppOpenedFirstTime") || undefined == appSettings.getBoolean("isAppOpenedFirstTime") || null == appSettings.getBoolean("isAppOpenedFirstTime")) {
+        appSettings.setBoolean("isAppOpenedFirstTime", false);
+        com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
+        appSettings.setNumber("cacheTimeReference", currentSeconds);
+    } else {
+        referenceTime = appSettings.getNumber("cacheTimeReference");
+        if (null == referenceTime || undefined == referenceTime) {
+            appSettings.setNumber("cacheTimeReference", currentSeconds);
+        } else if ((currentSeconds - referenceTime) > noOfSecondsInDays) {
+            clearCache();
+            appSettings.setNumber("cacheTimeReference", currentSeconds);
+        }
+    }
 }
 
 

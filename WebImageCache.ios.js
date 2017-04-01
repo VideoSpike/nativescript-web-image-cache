@@ -10,6 +10,7 @@ var imageCommon = require("./WebImageCache-common"),
     IMAGE = "WebImage",
     utils = require("utils/utils"),
     imageSource = require("image-source"),
+    appSettings = require("application-settings"),
     isInitialized = false,
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 global.moduleMerge(imageCommon, exports);
@@ -177,6 +178,35 @@ function clearCache() {
 }
 
 
+
+function setCacheLimit(numberOfDays) {
+
+    var noOfSecondsInAMinute = 60,
+        noOfMinutesInAHour = 60,
+        noOfHoursInADay = 24,
+        noOfSecondsADay=noOfSecondsInAMinute*noOfMinutesInAHour*noOfHoursInADay,
+        noOfSecondsInDays = noOfSecondsADay * numberOfDays,
+        currentSeconds = Math.round(new Date().getTime() / 1000),
+        referenceTime = 0;
+
+
+    if (true == appSettings.getBoolean("isAppOpenedFirstTime") || undefined == appSettings.getBoolean("isAppOpenedFirstTime") || null == appSettings.getBoolean("isAppOpenedFirstTime")) {
+        appSettings.setBoolean("isAppOpenedFirstTime", false);
+        com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
+        appSettings.setNumber("cacheTimeReference", currentSeconds);
+    } else {
+        referenceTime = appSettings.getNumber("cacheTimeReference");
+        if (null == referenceTime || undefined == referenceTime) {
+            appSettings.setNumber("cacheTimeReference", currentSeconds);
+        } else if ((currentSeconds - referenceTime) > noOfSecondsInDays) {
+            clearCache();
+            appSettings.setNumber("cacheTimeReference", currentSeconds);
+        }
+    }
+}
+
+
+exports.setCacheLimit = setCacheLimit;
 exports.WebImage = WebImage;
 exports.clearCache = clearCache;
 exports.initializeOnAngular = function(){
