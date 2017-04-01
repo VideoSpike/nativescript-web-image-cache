@@ -38,25 +38,18 @@ function onStretchPropertyChanged(data) {
 function onSrcPropertySet(data) {
 
 
-    var image = data.object,
-        value = data.newValue,
-        placeholder = image.placeholder,
-        placeholderImage = getPlaceholderUIImage(placeholder);
+    var image = data.object;
+    var value = data.newValue;
 
     if (types.isString(value)) {
         value = value.trim();
         if (0 === value.indexOf("http")) {
             image.isLoading = true;
             image["_url"] = value;
-            if(undefined==placeholderImage) {
-                image.ios.sd_setImageWithURLCompleted(value, function () {
-                    image.isLoading = false;
-                });
-            }else{
-                image.ios.sd_setImageWithURLPlaceholderImageCompleted(value, placeholderImage, function () {
-                    image.isLoading = false;
-                });
-            }
+            image.ios.sd_setImageWithURLCompleted(value, function () {
+                image.isLoading = false;
+
+            });
         } else if (utils.isFileOrResourcePath(value)) {
             image.isLoading = true;
             var source = new imageSource.ImageSource();
@@ -78,16 +71,6 @@ function onSrcPropertySet(data) {
         image.requestLayout();
     }
 
-}
-
-function getPlaceholderUIImage(value){
-    if (types.isString(value)){
-        if (utils.isFileOrResourcePath(value)) {
-            return  imageSource.fromFileOrResource(value).ios;
-        }
-    }
-
-    return undefined;
 }
 
 
@@ -194,35 +177,6 @@ function clearCache() {
 }
 
 
-
-function setCacheLimit(numberOfDays) {
-
-    var noOfSecondsInAMinute = 60,
-        noOfMinutesInAHour = 60,
-        noOfHoursInADay = 24,
-        noOfSecondsADay=noOfSecondsInAMinute*noOfMinutesInAHour*noOfHoursInADay,
-        noOfSecondsInDays = noOfSecondsADay * numberOfDays,
-        currentSeconds = Math.round(new Date().getTime() / 1000),
-        referenceTime = 0;
-
-
-    if (true == appSettings.getBoolean("isAppOpenedFirstTime") || undefined == appSettings.getBoolean("isAppOpenedFirstTime") || null == appSettings.getBoolean("isAppOpenedFirstTime")) {
-        appSettings.setBoolean("isAppOpenedFirstTime", false);
-        com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
-        appSettings.setNumber("cacheTimeReference", currentSeconds);
-    } else {
-        referenceTime = appSettings.getNumber("cacheTimeReference");
-        if (null == referenceTime || undefined == referenceTime) {
-            appSettings.setNumber("cacheTimeReference", currentSeconds);
-        } else if ((currentSeconds - referenceTime) > noOfSecondsInDays) {
-            clearCache();
-            appSettings.setNumber("cacheTimeReference", currentSeconds);
-        }
-    }
-}
-
-
-
 exports.WebImage = WebImage;
 exports.clearCache = clearCache;
 exports.initializeOnAngular = function(){
@@ -236,5 +190,3 @@ exports.initializeOnAngular = function(){
         isInitialized = true;
     }
 };
-
-exports.setCacheLimit = setCacheLimit;

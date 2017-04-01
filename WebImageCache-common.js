@@ -6,7 +6,6 @@ var dependencyObservable = require("ui/core/dependency-observable"),
     proxy = require("ui/core/proxy"),
     IMAGE = "WebImage",
     SRC = "src",
-    PLACEHOLDER = "placeholder",
     LOADING="isLoading";
 var AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
@@ -39,25 +38,10 @@ var WebImage = function(_super){
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(WebImage.prototype,PLACEHOLDER,{
-        get: function () {
-            return this._getValue(WebImage.placeholderProperty);
-        },
-        set: function (value) {
-            return this._setValue(WebImage.placeholderProperty,value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-
 
     WebImage.srcProperty=new dependencyObservable.Property(SRC,IMAGE, new proxy.PropertyMetadata(undefined,dependencyObservable.PropertyMetadataSettings.None));
     WebImage.isLoadingProperty=new dependencyObservable.Property(LOADING,IMAGE, new proxy.PropertyMetadata(true,dependencyObservable.PropertyMetadataSettings.None));
-    WebImage.placeholderProperty = new dependencyObservable.Property(PLACEHOLDER,IMAGE, new proxy.PropertyMetadata(undefined,dependencyObservable.PropertyMetadataSettings.None));
     return WebImage;
-
 }(view.View);
 
 exports.WebImage = WebImage;
-
