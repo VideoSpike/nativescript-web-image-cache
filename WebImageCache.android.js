@@ -162,7 +162,7 @@ function setSource(image,value){
                 image.isLoading=true;
                 fileName=value;
             }
-
+            console.log("setting image to" + fileName);
             image.android.setImageURI(android.net.Uri.parse(fileName), null);
 
             var controllerListener=new ProxyBaseControllerListener();
@@ -350,6 +350,9 @@ exports.WebImage=WebImage;
 exports.clearCache=function(){
     com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
 };
+
+exports.setCacheLimit = setCacheLimit;
+
 exports.initialize=initiialize;
 
 exports.initializeOnAngular = function(){
