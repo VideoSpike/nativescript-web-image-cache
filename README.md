@@ -78,7 +78,7 @@ Default cache purge time can be specified in number of days.
     var cacheLimitInDays : number = 7;
     setCacheLimit(cacheLimitInDays);
 
-##Usage in VanillaJS/TypeScript apps 
+## Usage in VanillaJS/TypeScript apps 
 
 **IF on android, need to initialise the plugin before using or clearing the cache, initialisation not required for iOS**
 
