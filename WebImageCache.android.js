@@ -63,7 +63,6 @@ function setRounded(draweeHierarchy, rounded){
 }
 
 function onPlaceholderPropertyChanged(data){
-    console.log("on placeholder property changed!");
     var image = data.object,
         src = data.newValue;
     if(!image.android){
@@ -77,16 +76,13 @@ function onPlaceholderPropertyChanged(data){
 }
 
 function setPlaceholder(draweeHierarchy,src,placeholderStretch){
-    console.log("called placeholder src is " + src);
     var drawable = getPlaceholderImageDrawable(src),
         nativePlaceholderStretch = stretchMapping[placeholderStretch] ||  com.facebook.drawee.drawable.ScalingUtils.ScaleType.CENTER;
 
-    console.log(`drawable : ${drawable} and placeholder stretch is ${placeholderStretch}`);
     if(null==drawable){
         return;
     }
 
-    console.log("called set placeholder image");
     draweeHierarchy.setPlaceholderImage(drawable, nativePlaceholderStretch);
 
 }
@@ -162,7 +158,7 @@ function setSource(image,value){
                 image.isLoading=true;
                 fileName=value;
             }
-            console.log("setting image to" + fileName);
+
             image.android.setImageURI(android.net.Uri.parse(fileName), null);
 
             var controllerListener=new ProxyBaseControllerListener();
@@ -284,23 +280,18 @@ function getPlaceholderImageDrawable(value){
     if (types.isString(value)) {
 
         value = value.trim();
-            console.log(`hello ${value}`);
-            console.log("is file or resource path " + utils.isFileOrResourcePath(value));
+
         if(utils.isFileOrResourcePath(value)){
 
 
             if(0===value.indexOf("~/")){
                 fileName=fs.path.join(fs.knownFolders.currentApp().path, value.replace("~/", ""));
-                //fileName="file:"+ fileName;
-                console.log("filename is " + fileName);
                 drawable = android.graphics.drawable.Drawable.createFromPath(fileName);
-                console.log("drawable is " + drawable);
             }else if(0==value.indexOf("res")){
                 fileName=value;
                 var res = utils.ad.getApplicationContext().getResources();
                 var resName = fileName.substr(utils.RESOURCE_PREFIX.length);
                 var identifier = res.getIdentifier(resName, 'drawable', utils.ad.getApplication().getPackageName());
-                console.log("resource identifier is " + identifier);
                 drawable = res.getDrawable(identifier);
             }
 

@@ -11,6 +11,7 @@ var imageCommon = require("./WebImageCache-common"),
     utils = require("utils/utils"),
     imageSource = require("image-source"),
     appSettings = require("application-settings"),
+    PLACEHOLDER = "placeholder",
     isInitialized = false,
     AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 global.moduleMerge(imageCommon, exports);
@@ -36,18 +37,23 @@ function onStretchPropertyChanged(data) {
 }
 
 
+
+
+
 function onSrcPropertySet(data) {
 
 
-    var image = data.object;
-    var value = data.newValue;
+    var image = data.object,
+        value = data.newValue,
+        placeholder = image.placeholder,
+        placeholderImage = getPlaceholderUIImage(placeholder);
 
     if (types.isString(value)) {
         value = value.trim();
         if (0 === value.indexOf("http")) {
             image.isLoading = true;
             image["_url"] = value;
-            image.ios.sd_setImageWithURLCompleted(value, function () {
+            image.ios.sd_setImageWithURLPlaceholderImageCompleted(value,placeholderImage, function () {
                 image.isLoading = false;
 
             });
@@ -72,6 +78,16 @@ function onSrcPropertySet(data) {
         image.requestLayout();
     }
 
+}
+
+function getPlaceholderUIImage(value){
+        if (types.isString(value)){
+               if (utils.isFileOrResourcePath(value)) {
+                      return  imageSource.fromFileOrResource(value).ios;
+                   }
+           }
+
+           return undefined;
 }
 
 
@@ -101,6 +117,20 @@ var WebImage = (function (_super) {
         configurable: true
     });
     WebImage.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, AffectsLayout, onStretchPropertyChanged));
+
+    Object.defineProperty(WebImage.prototype,PLACEHOLDER,{
+        get: function () {
+            return this._getValue(WebImage.placeholderProperty);
+        },
+        set: function (value) {
+            this._setValue(WebImage.placeholderProperty, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    WebImage.placeholderProperty = new dependencyObservable.Property(PLACEHOLDER, IMAGE, new proxy.PropertyMetadata(false, AffectsLayout));
+
 
     Object.defineProperty(WebImage.prototype, "ios", {
         get: function () {
@@ -192,7 +222,7 @@ function setCacheLimit(numberOfDays) {
 
     if (true == appSettings.getBoolean("isAppOpenedFirstTime") || undefined == appSettings.getBoolean("isAppOpenedFirstTime") || null == appSettings.getBoolean("isAppOpenedFirstTime")) {
         appSettings.setBoolean("isAppOpenedFirstTime", false);
-        com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().clearCaches();
+        clearCache();
         appSettings.setNumber("cacheTimeReference", currentSeconds);
     } else {
         referenceTime = appSettings.getNumber("cacheTimeReference");
