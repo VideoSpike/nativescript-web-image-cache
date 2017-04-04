@@ -32,7 +32,7 @@ After initialisation, the markup tag `<WebImage></WebImage>` can be used in temp
         </WebImage>
     </GridLayout>
 
-###Caching the images
+### Caching the images
 
  - Add the element `WebImage`  with the `src` attribute set to the url just like normal image tag wherever image caching is required.   
  - `stretch` attribute can take values specified here
@@ -41,7 +41,7 @@ After initialisation, the markup tag `<WebImage></WebImage>` can be used in temp
  - `placeholderStretch` can be set for **only android** to specify the stretch for placeholder image, values same as that of `stretch`. For iOS, no separate stretch property for placeholder (native library does not seem to support).
   
  
-###Check if image is loading 
+### Check if image is loading 
 
 - Get the reference to the WebImage view by using angular **template variable references** and **@ViewChild** decorator and check the isLoading property (same as that of NativeScript Image isLoading property). 
 - Access the reference only after view is initialised, i.e. after **ngAfterViewInit** is called, getting the reference in **ngOnInit** can return undefined ( for detailed info, read about [angular component lifecycle hooks](https://angular.io/docs/ts/latest/guide/lifecycle-hooks.html) ).
@@ -62,7 +62,7 @@ After initialisation, the markup tag `<WebImage></WebImage>` can be used in temp
 
 
 
-###Clearing the cache
+### Clearing the cache
 
 Import the module, call the method `clearCache()`  , default time is for SDWebImageCache is 7 days, and for Fresco is 60 days,  after which cache is automatically cleared.
 
@@ -70,7 +70,7 @@ Import the module, call the method `clearCache()`  , default time is for SDWebIm
      import {clearCache} from "nativescript-web-image-cache";
      clearCache();
 
-###Setting custom cache purge time
+### Setting custom cache purge time
 Default cache purge time can be specified in number of days.
     
     import {setCacheLimit} from "nativescript-web-image-cache";
@@ -82,7 +82,7 @@ Default cache purge time can be specified in number of days.
 
 **IF on android, need to initialise the plugin before using or clearing the cache, initialisation not required for iOS**
 
-###Initialising on android - in app.js
+### Initialising on android - in app.js
 
     var imageCache = require("nativescript-web-image-cache");
     if (application.android) {
@@ -104,7 +104,7 @@ After initialisation, add the namespace attribute    `xmlns:IC="nativescript-web
     </Page>
 ```
 
-###Caching the images
+### Caching the images
 
  - To the opening page tag of the xml, add
    `xmlns:IC="nativescript-web-image-cache"`.
@@ -114,7 +114,7 @@ After initialisation, add the namespace attribute    `xmlns:IC="nativescript-web
  - `placeholder` accepts a local image url in file path (~/) or resource (res://) form
  - `placeholderStretch` can be set for **only android** to specify the stretch for placeholder image, values same as that of `stretch`. For iOS, no separate stretch property for placeholder (native library does not seem to support).
 
-###Check if image is loading 
+### Check if image is loading 
 
  - To check if an image is loading, get the reference to the WebImage view by using `page.getViewById("myWebImage")` , and check the isLoading property (same as that of NativeScript Image isLoading property).
 
@@ -127,7 +127,7 @@ var myImage1 = page.getViewById("my-image-1"),
 ```
 
 
-###Clearing the cache
+### Clearing the cache
 
 - Require the module, call the method `clearCache()`  , default time for SDWebImageCache is 7 days, and for Fresco is 60 days,  after which cache is automatically cleared.
 ```
@@ -135,7 +135,7 @@ var imageCacheModule=require("nativescript-web-image-cache");
 imageCacheModule.clearCache();
 ```
 
-###Setting custom cache purge time
+### Setting custom cache purge time
 
 Default cache purge time can be specified in number of days.
     
