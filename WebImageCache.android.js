@@ -11,6 +11,7 @@ var imageCommon = require("./WebImageCache-common"),
     utils = require("utils/utils"),
     STRETCH = "stretch",
     ROUNDED = "rounded",
+    RADIUS = "radius",
     PLACEHOLDER = "placeholder",
     PLACEHOLDERSTRETCH = "placeholderStretch",
     fs=require("file-system"),
@@ -59,6 +60,24 @@ function setRounded(draweeHierarchy, rounded){
         roundingParams.setRoundAsCircle(true);
     else
         roundingParams.setRoundAsCircle(false);
+    draweeHierarchy.setRoundingParams(roundingParams);
+}
+
+function onRadiusPropertyChanged(data) {
+    var image = data.object;
+    if (!image.android) {
+        return;
+    }
+    var draweeHierarchy = image.android.getHierarchy();
+    setRadius(draweeHierarchy, data.newValue);
+}
+
+function setRadius(draweeHierarchy, radius) {
+    var roundingParams = new com.facebook.drawee.generic.RoundingParams.fromCornersRadius(0);
+    if (radius) {
+        roundingParams.setCornersRadius(radius);
+    }
+
     draweeHierarchy.setRoundingParams(roundingParams);
 }
 
@@ -189,6 +208,17 @@ var WebImage=(function (_super) {
 
     __extends(WebImage,_super);
 
+    Object.defineProperty(WebImage.prototype, RADIUS, {
+        get: function() {
+            return this._getValue(WebImage.radiusProperty);
+        },
+        set: function(value) {
+            this._setValue(WebImage.radiusProperty, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WebImage.radiusProperty = new dependencyObservable.Property(RADIUS, IMAGE, new proxy.PropertyMetadata(false, AffectsLayout, onRadiusPropertyChanged));
 
     Object.defineProperty(WebImage.prototype,ROUNDED,{
         get: function () {
@@ -255,6 +285,9 @@ var WebImage=(function (_super) {
         }
         if(undefined!==this.rounded){
             setRounded(this._android.getHierarchy(),this.rounded);
+        }
+        if (undefined !== this.radius) {
+            setRadius(this._android.getHierarchy(), this.radius);
         }
         if(undefined!==this.placeholder){
             setPlaceholder(this._android.getHierarchy(),this.placeholder,this.placeholderStretch);
