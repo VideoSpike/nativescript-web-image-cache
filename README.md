@@ -48,7 +48,7 @@ After initialisation, the markup tag `<WebImage></WebImage>` can be used in temp
 
 **The Markup**
 
-        <WebImage stretch="fill" row="0"
+        <WebImage rounded="false" radius="20" stretch="fill" row="0"
                      col="0"
                      src="#your image url here" #container>
         </WebImage>
