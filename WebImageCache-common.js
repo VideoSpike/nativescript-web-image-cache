@@ -1,13 +1,13 @@
 /**
  * Created by sumeet on 17-06-2016.
  */
-var dependencyObservable = require("ui/core/dependency-observable"),
-    view = require("ui/core/view"),
-    proxy = require("ui/core/proxy"),
-    IMAGE = "WebImage",
-    SRC = "src",
-    LOADING="isLoading";
-var AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
+
+
+/*tns 3.0 implementation*/
+
+
+var viewModule = require("ui/core/view");
+
 
 var WebImage = function(_super){
 
@@ -18,30 +18,25 @@ var WebImage = function(_super){
         _super.apply(this,arguments);
     }
 
-    Object.defineProperty(WebImage.prototype,SRC,{
-        get: function () {
-            return this._getValue(WebImage.srcProperty);
-        },
-        set: function (value) {
-            this._setValue(WebImage.srcProperty, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(WebImage.prototype,LOADING,{
-        get: function () {
-            return this._getValue(WebImage.isLoadingProperty);
-        },
-        set: function (value) {
-            return this._setValue(WebImage.isLoadingProperty,value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    WebImage.srcProperty=new dependencyObservable.Property(SRC,IMAGE, new proxy.PropertyMetadata(undefined,dependencyObservable.PropertyMetadataSettings.None));
-    WebImage.isLoadingProperty=new dependencyObservable.Property(LOADING,IMAGE, new proxy.PropertyMetadata(true,dependencyObservable.PropertyMetadataSettings.None));
     return WebImage;
-}(view.View);
+}(viewModule.View);
+
+var srcProperty = new viewModule.Property({name:"src",defaultValue:""}),
+    isLoadingProperty = new viewModule.Property({name:"isLoading",defaultValue:true, valueConverter : stringToBooleanConverter});
+
+
+function stringToBooleanConverter(value){
+    if("boolean" === typeof value){
+        return value;
+    }
+    return "true" === value ?  true : ("false" === value ? false : undefined);
+}
+
+srcProperty.register(WebImage);
+isLoadingProperty.register(WebImage);
 
 exports.WebImage = WebImage;
+
+exports.srcProperty = srcProperty;
+exports.isLoadingProperty = isLoadingProperty;
+exports.stringToBooleanConverter = stringToBooleanConverter;

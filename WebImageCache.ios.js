@@ -4,34 +4,43 @@
 var imageCommon = require("./WebImageCache-common"),
     enums = require("ui/enums"),
     types = require("utils/types"),
-    STRETCH = "stretch",
     dependencyObservable = require("ui/core/dependency-observable"),
-    proxy = require("ui/core/proxy"),
-    IMAGE = "WebImage",
     utils = require("utils/utils"),
     imageSource = require("image-source"),
     appSettings = require("application-settings"),
-    PLACEHOLDER = "placeholder",
-    isInitialized = false,
-    AffectsLayout = dependencyObservable.PropertyMetadataSettings.AffectsLayout;
+    isInitialized = false;
+
+
 global.moduleMerge(imageCommon, exports);
 
-function onStretchPropertyChanged(data) {
 
-    var image = data.object;
-    switch (data.newValue) {
-        case enums.Stretch.aspectFit:
-            image.ios.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
+
+var viewModule = require("ui/core/view");
+
+var placeholderProperty = new viewModule.Property({name:"placeholder",defaultValue:undefined,affectsLayout:true}),
+    stretchProperty = new viewModule.Property({name:"stretch",defaultValue:"none",affectsLayout:true});
+
+
+placeholderProperty.register(imageCommon.WebImage);
+stretchProperty.register(imageCommon.WebImage);
+
+
+
+function onStretchPropertyChanged(nativeView,value) {
+
+    switch (value) {
+        case "aspectFit":
+            nativeView.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
             break;
-        case enums.Stretch.aspectFill:
-            image.ios.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFill;
+        case "aspectFill":
+            nativeView.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFill;
             break;
-        case enums.Stretch.fill:
-            image.ios.contentMode = UIViewContentMode.UIViewContentModeScaleToFill;
+        case "fill":
+            nativeView.contentMode = UIViewContentMode.UIViewContentModeScaleToFill;
             break;
-        case enums.Stretch.none:
+        case "none":
         default:
-            image.ios.contentMode = UIViewContentMode.UIViewContentModeTopLeft;
+            nativeView.contentMode = UIViewContentMode.UIViewContentModeTopLeft;
             break;
     }
 }
@@ -40,20 +49,18 @@ function onStretchPropertyChanged(data) {
 
 
 
-function onSrcPropertySet(data) {
+function onSrcPropertySet(nativeWrapper,value) {
 
 
-    var image = data.object,
-        value = data.newValue,
-        placeholder = image.placeholder,
+    var image = nativeWrapper,
+        placeholder = nativeWrapper.placeholder,
         placeholderImage = getPlaceholderUIImage(placeholder);
 
     if (types.isString(value)) {
         value = value.trim();
         if (0 === value.indexOf("http")) {
             image.isLoading = true;
-            image["_url"] = value;
-            image.ios.sd_setImageWithURLPlaceholderImageCompleted(value,placeholderImage, function () {
+            image.nativeView.sd_setImageWithURLPlaceholderImageCompleted(value,placeholderImage, function () {
                 image.isLoading = false;
 
             });
@@ -65,12 +72,12 @@ function onSrcPropertySet(data) {
                 var path = value.substr(utils.RESOURCE_PREFIX.length);
                 source.fromResource(path).then(function () {
                     image.isLoading = false;
-                    image.ios.image = source.ios;
+                    image.nativeView.image = source.ios || source.nativeView;
                 });
             } else {
                 source.fromFile(value).then(function () {
                     image.isLoading = false;
-                    image.ios.image = source.ios;
+                    image.nativeView.image = source.ios || source.nativeView;
                 });
             }
 
@@ -83,7 +90,7 @@ function onSrcPropertySet(data) {
 function getPlaceholderUIImage(value){
         if (types.isString(value)){
                if (utils.isFileOrResourcePath(value)) {
-                      return  imageSource.fromFileOrResource(value).ios;
+                   return  imageSource.fromFileOrResource(value).ios;
                    }
            }
 
@@ -91,50 +98,26 @@ function getPlaceholderUIImage(value){
 }
 
 
-imageCommon.WebImage.srcProperty.metadata.onSetNativeValue = onSrcPropertySet;
-//imageCommon.SDWebImage.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
 
 var WebImage = (function (_super) {
 
     __extends(WebImage, _super);
     function WebImage() {
         _super.call(this);
-        this._ios = new UIImageView();
-        this._ios.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
-        this._ios.clipsToBounds = true;
-        this._ios.userInteractionEnabled = true;
     }
 
-
-    Object.defineProperty(WebImage.prototype, STRETCH, {
-        get: function () {
-            return this._getValue(WebImage.stretchProperty);
-        },
-        set: function (value) {
-            this._setValue(WebImage.stretchProperty, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    WebImage.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, AffectsLayout, onStretchPropertyChanged));
-
-    Object.defineProperty(WebImage.prototype,PLACEHOLDER,{
-        get: function () {
-            return this._getValue(WebImage.placeholderProperty);
-        },
-        set: function (value) {
-            this._setValue(WebImage.placeholderProperty, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    WebImage.placeholderProperty = new dependencyObservable.Property(PLACEHOLDER, IMAGE, new proxy.PropertyMetadata(false, AffectsLayout));
+    WebImage.prototype.createNativeView = function () {
+        var imageView = new UIImageView();
+        imageView.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit;
+        imageView.clipsToBounds = true;
+        imageView.userInteractionEnabled = true;
+        return imageView;
+    };
 
 
     Object.defineProperty(WebImage.prototype, "ios", {
         get: function () {
-            return this._ios;
+            return this.nativeView;
         },
         enumerable: true,
         configurable: true
@@ -147,8 +130,8 @@ var WebImage = (function (_super) {
         var widthMode = utils.layout.getMeasureSpecMode(widthMeasureSpec);
         var height = utils.layout.getMeasureSpecSize(heightMeasureSpec);
         var heightMode = utils.layout.getMeasureSpecMode(heightMeasureSpec);
-        var nativeWidth = this._ios ? (this._ios.image ? this._ios.image.size.width : 0) : 0;
-        var nativeHeight = this._ios ? (this._ios.image ? this._ios.image.size.height : 0) : 0;
+        var nativeWidth = this.nativeView ? (this.nativeView.image ? this.nativeView.image.size.width : 0) : 0;
+        var nativeHeight = this.nativeView ? (this.nativeView.image ? this.nativeView.image.size.height : 0) : 0;
         var measureWidth = Math.max(nativeWidth, this.minWidth);
         var measureHeight = Math.max(nativeHeight, this.minHeight);
         var finiteWidth = widthMode !== utils.layout.UNSPECIFIED;
@@ -196,6 +179,38 @@ var WebImage = (function (_super) {
             }
         }
         return {width: scaleW, height: scaleH};
+    };
+
+    WebImage.prototype[placeholderProperty.getDefault] = function(){
+      return undefined;
+    };
+
+    WebImage.prototype[placeholderProperty.setNative] = function(value){
+        //do nothing
+    };
+
+    WebImage.prototype[stretchProperty.getDefault] = function(){
+        return "none";
+    };
+
+    WebImage.prototype[stretchProperty.setNative] = function(value){
+        onStretchPropertyChanged(this.nativeView,value);
+    };
+
+    WebImage.prototype[imageCommon.isLoadingProperty.getDefault] = function(){
+        return false;
+    };
+
+    WebImage.prototype[imageCommon.isLoadingProperty.setNative] = function(value){
+      //do nothing
+    };
+
+    WebImage.prototype[imageCommon.srcProperty.getDefault] = function(){
+
+    };
+
+    WebImage.prototype[imageCommon.srcProperty.setNative] = function(value){
+        onSrcPropertySet(this,value);
     };
 
     return WebImage;
