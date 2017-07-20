@@ -15,7 +15,6 @@ var WebImage = function(_super) {
   __extends(WebImage, _super);
 
   function WebImage() {
-    console.log("instantiating common web image");
     _super.apply(this, arguments);
   }
 
