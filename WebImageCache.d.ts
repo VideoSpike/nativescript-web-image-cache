@@ -41,3 +41,9 @@ export function initialize(): void;
  * To initialize the plugin on angular for both android and iOS
  */
 export function initializeOnAngular(): void;
+
+/**
+ * To set the number of days in which to expire cache
+ * @param days : limit of the cache
+ */
+export function setCacheLimit(days:number) : void;
