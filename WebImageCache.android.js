@@ -219,7 +219,7 @@ exports.initializeOnAngular = function(){
 		isInitialized=true;
 	}
 };
-=======
+
 /**
  * Created by sumeet on 17-06-2016.
  */
