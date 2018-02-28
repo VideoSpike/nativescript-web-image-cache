@@ -1,4 +1,4 @@
-import { View } from 'ui/core/view';
+import { View } from 'tns-core-modules/ui/core/view';
 
 export class WebImage extends View {
   /**
@@ -46,4 +46,4 @@ export function initializeOnAngular(): void;
  * To set the number of days in which to expire cache
  * @param days : limit of the cache
  */
-export function setCacheLimit(days:number) : void;
+export function setCacheLimit(days: number): void;
