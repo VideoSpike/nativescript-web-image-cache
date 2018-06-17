@@ -14,7 +14,7 @@
     "url": "git+https://github.com/VideoSpike/nativescript-web-image-cache.git"
   },
   "peerDependencies": {
-    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1"
+    "tns-core-modules": ">=3.0.0 || >=3.0.0-rc.1"
   },
   "keywords": [
     "nativescript",
