@@ -80,6 +80,7 @@ var Helpers = (function () {
                 image.requestLayout();
             }
             else {
+                throw new Error("Path \"" + "\" is not a valid file or resource.");
             }
         }
     };

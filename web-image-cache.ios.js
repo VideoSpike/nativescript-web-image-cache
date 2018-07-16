@@ -133,7 +133,7 @@ exports.setCacheLimit = setCacheLimit;
 function clearCache() {
     var imageCache = SDImageCache.sharedImageCache();
     imageCache.clearMemory();
-    imageCache.clearDisk();
+    imageCache.clearDiskOnCompletion(() => {});
 }
 exports.clearCache = clearCache;
 function initializeOnAngular() {
