@@ -50,7 +50,7 @@ After initialisation, the markup tag `<WebImage></WebImage>` can be used in temp
 
         <WebImage stretch="fill" row="0"
                      col="0"
-                     src="#your image url here" #container>
+                     src="#your image url" #container>
         </WebImage>
 
 **The Backing Component Class Snippet**
