@@ -199,7 +199,7 @@ export function setCacheLimit(numberOfDays) {
 export function clearCache() {
   let imageCache = SDImageCache.sharedImageCache();
   imageCache.clearMemory();
-  imageCache.clearDisk();
+  imageCache.clearDiskOnCompletion(() => {});
 }
 
 export function initializeOnAngular() {
