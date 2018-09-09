@@ -23,6 +23,18 @@ Released under the MIT License, anybody can freely include this in any type of p
       initializeOnAngular();
      }
     }
+
+For iOS you also need to register the module within your `app/main.ts` file right before the `bootstrapModule()` call:
+
+    import { isIOS } from "tns-core-modules/platform";
+    import * as elementRegistryModule from 'nativescript-angular/element-registry';
+    
+    if (isIOS) {
+        elementRegistryModule.registerElement("WebImage", () => require("nativescript-web-image-cache").WebImage);
+    }
+
+    platformNativeScriptDynamic().bootstrapModule(AppModule);
+
 After initialisation, the markup tag `<WebImage></WebImage>` can be used in templates of components.
 
     <GridLayout rows='*' columns='*'>
