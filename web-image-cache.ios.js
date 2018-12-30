@@ -5,7 +5,6 @@ var view_1 = require("tns-core-modules/ui/core/view");
 var appSettings = require("tns-core-modules/application-settings");
 var helpers_1 = require("./ios-ts-lib/helpers");
 var enums = require("tns-core-modules/ui/enums");
-var isInitialized = false;
 var placeholderProperty = new view_1.Property({
     name: "placeholder",
     defaultValue: undefined,
@@ -133,17 +132,11 @@ exports.setCacheLimit = setCacheLimit;
 function clearCache() {
     var imageCache = SDImageCache.sharedImageCache();
     imageCache.clearMemory();
-    imageCache.clearDiskOnCompletion(function() {});
+    imageCache.clearDiskOnCompletion(function () { });
 }
 exports.clearCache = clearCache;
 function initializeOnAngular() {
-    if (false === isInitialized) {
-        var _elementRegistry = require("nativescript-angular/element-registry");
-        _elementRegistry.registerElement("WebImage", function () {
-            return require("nativescript-web-image-cache").WebImage;
-        });
-        isInitialized = true;
-    }
+    throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }
 exports.initializeOnAngular = initializeOnAngular;
 //# sourceMappingURL=web-image-cache.ios.js.map

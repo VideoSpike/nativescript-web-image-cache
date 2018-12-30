@@ -6,7 +6,6 @@ var helpers_1 = require("./and-ts-lib/helpers");
 var application = require("tns-core-modules/application");
 var appSettings = require("tns-core-modules/application-settings");
 var view_1 = require("tns-core-modules/ui/core/view");
-var isInitialized = false;
 var roundedProperty = new view_1.Property({
     name: "rounded",
     defaultValue: false,
@@ -144,14 +143,7 @@ function clearCache() {
 }
 exports.clearCache = clearCache;
 function initializeOnAngular() {
-    if (false === isInitialized) {
-        var _elementRegistry = require("nativescript-angular/element-registry");
-        _elementRegistry.registerElement("WebImage", function () {
-            return require("nativescript-web-image-cache").WebImage;
-        });
-        com.facebook.drawee.backends.pipeline.Fresco.initialize(application.android.context);
-        isInitialized = true;
-    }
+    throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }
 exports.initializeOnAngular = initializeOnAngular;
 //# sourceMappingURL=web-image-cache.android.js.map

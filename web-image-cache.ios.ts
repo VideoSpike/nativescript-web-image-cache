@@ -2,14 +2,12 @@
 
 import { WebImageCommon, srcProperty, isLoadingProperty } from './web-image-cache.common';
 
-import { View, Property, booleanConverter } from 'tns-core-modules/ui/core/view';
+import { Property } from 'tns-core-modules/ui/core/view';
 import * as appSettings from 'tns-core-modules/application-settings';
 
 import { Helpers as helpers } from './ios-ts-lib/helpers';
 
 import * as enums from 'tns-core-modules/ui/enums';
-
-let isInitialized: boolean = false;
 
 declare class UIImageView {
   public contentMode: any;
@@ -203,15 +201,5 @@ export function clearCache() {
 }
 
 export function initializeOnAngular() {
-
-  if (false === isInitialized) {
-    let _elementRegistry = require("nativescript-angular/element-registry");
-
-    _elementRegistry.registerElement("WebImage", function() {
-      return require("nativescript-web-image-cache").WebImage;
-    });
-    isInitialized = true;
-  }
+  throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }
-
-// export { helpers.setCacheLimit };

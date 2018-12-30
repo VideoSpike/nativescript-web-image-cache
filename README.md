@@ -13,24 +13,43 @@ Released under the MIT License, anybody can freely include this in any type of p
 
 ** Tested on NativeScript 2.3+ on both Angular 2 and VanillaJS, if any problems while running on previous versions, please update. This version of plugin has breaking changes, if you are using version 1.0.3 of this plugin, please migrate, it is easy to migrate and this version of plugin supports android as well , if you still prefer running on the previous version, use `tns plugin add nativescript-web-image-cache@1.0.3`.**
 
+## Usage in Vue
+In `main.js`:
+
+```js
+const Vue = require("nativescript-vue") // you already have something like this
+Vue.registerElement('WebImage', () => require('nativescript-web-image-cache').WebImage) // now add this
+```
+
+Then in any `.vue` file:
+
+```vue
+<OtherMarkup>
+  <WebImage src="https://somedomain.com/images/img-file.png" stretch="aspectFill"></WebImage>
+</OtherMarkup>
+```
+
 ## Usage in Angular
 
-**Need to initialise the plugin on both android and iOS in the constructor / ngOnInit lifecycle hook of the bootstrap component ts file.**
+> ⚠️ This was changed in plugin version 5.0.0!
 
-    import {initializeOnAngular} from "nativescript-web-image-cache";
-    export class AppComponent {
-      constructor(){
-      initializeOnAngular();
-     }
-    }
+In `app.module.ts`, or any specific module you want to use this plugin:
+
+```typescript
+import { registerElement } from "nativescript-angular";
+registerElement("WebImage", () => require("nativescript-web-image-cache").WebImage);
+```
+
 After initialisation, the markup tag `<WebImage></WebImage>` can be used in templates of components.
 
+```html
     <GridLayout rows='*' columns='*'>
         <WebImage stretch="fill" row="0"
                      col="0" placeholder="localPlaceholderImgorResUrl"
                      src="#your image url here">
         </WebImage>
     </GridLayout>
+```
 
 ### Caching the images
 

@@ -57,14 +57,11 @@
       "ios": "3.0.0"
     }
   },
-  "peerDependencies": {
-    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/VideoSpike/nativescript-web-image-cache.git"
   },
   "scripts": {},
   "typings": "web-image-cache.d.ts",
-  "version": "4.2.6"
+  "version": "5.0.0"
 }
