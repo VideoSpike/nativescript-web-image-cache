@@ -5,15 +5,8 @@ import { StretchMapping as stretchMap } from './and-ts-lib/stretch-mapping';
 import { Helpers as helpers } from './and-ts-lib/helpers';
 
 import * as application from 'tns-core-modules/application';
-import * as dependencyObservable from 'tns-core-modules/ui/core/dependency-observable';
-import * as types from 'tns-core-modules/utils/types';
-import * as utils from 'tns-core-modules/utils/utils';
-import * as fs from 'tns-core-modules/file-system';
 import * as appSettings from 'tns-core-modules/application-settings';
-import { View, Property, booleanConverter } from 'tns-core-modules/ui/core/view';
-import { ProxyBaseControllerListener } from './and-ts-lib/proxy-base-controller-listener';
-
-let isInitialized = false;
+import { Property, booleanConverter } from 'tns-core-modules/ui/core/view';
 
 let roundedProperty = new Property<WebImageCommon, boolean>({
   name: "rounded",
@@ -180,15 +173,5 @@ export function clearCache() {
 }
 
 export function initializeOnAngular() {
-
-  if (false === isInitialized) {
-    let _elementRegistry = require("nativescript-angular/element-registry");
-
-
-    _elementRegistry.registerElement("WebImage", function() {
-      return require("nativescript-web-image-cache").WebImage;
-    });
-    com.facebook.drawee.backends.pipeline.Fresco.initialize(application.android.context);
-    isInitialized = true;
-  }
+  throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }

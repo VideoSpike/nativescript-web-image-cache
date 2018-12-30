@@ -1,7 +1,4 @@
-import { Observable } from 'tns-core-modules/data/observable';
 import { View, Property, booleanConverter } from 'tns-core-modules/ui/core/view';
-import * as app from 'tns-core-modules/application';
-import * as dialogs from 'tns-core-modules/ui/dialogs';
 
 export class WebImageCommon extends View {
   public src: string;
@@ -14,7 +11,6 @@ export class WebImageCommon extends View {
   constructor() {
     super();
   }
-
 }
 
 export const srcProperty = new Property<WebImageCommon, string>({
