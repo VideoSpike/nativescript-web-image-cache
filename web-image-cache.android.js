@@ -146,4 +146,35 @@ function initializeOnAngular() {
     throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }
 exports.initializeOnAngular = initializeOnAngular;
+function preFetchImage(urls) {
+    return new Promise(function (resolve, reject) {
+        if (!urls || !Array.isArray(urls) || urls.length < 1) {
+            reject("preFetchImage: param should be array of urls");
+        }
+        else {
+            var counter_1 = 0;
+            urls.forEach(function (url) {
+                var uri = android.net.Uri.parse(url);
+                var prefetchSubscriber = com.facebook.datasource.BaseDataSubscriber.extend({
+                    onNewResultImpl: function (dataSource) {
+                        console.log('onNewResultImpl: ' + url);
+                        counter_1++;
+                        if (counter_1 === urls.length) {
+                            resolve();
+                        }
+                    },
+                    onFailureImpl: function (dataSource) {
+                        counter_1++;
+                        if (counter_1 === urls.length) {
+                            reject("preFetchImage: failed to prefetch " + uri.toString());
+                        }
+                    }
+                });
+                var dataSource = com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().prefetchToBitmapCache(com.facebook.imagepipeline.request.ImageRequest.fromUri(uri), application.android.context);
+                dataSource.subscribe(new prefetchSubscriber(), com.facebook.common.executors.UiThreadImmediateExecutorService.getInstance());
+            });
+        }
+    });
+}
+exports.preFetchImage = preFetchImage;
 //# sourceMappingURL=web-image-cache.android.js.map

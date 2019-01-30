@@ -139,4 +139,17 @@ function initializeOnAngular() {
     throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }
 exports.initializeOnAngular = initializeOnAngular;
+function preFetchImage(urls) {
+    return new Promise(function (resolve, reject) {
+        if (!urls || !Array.isArray(urls) || urls.length < 1) {
+            reject("preFetchImage: param should be array of urls");
+        }
+        else {
+            SDWebImagePrefetcher.sharedImagePrefetcher().prefetchURLsProgressCompleted(urls, null, function (finishedCount, skippedCount) {
+                resolve();
+            });
+        }
+    });
+}
+exports.preFetchImage = preFetchImage;
 //# sourceMappingURL=web-image-cache.ios.js.map
