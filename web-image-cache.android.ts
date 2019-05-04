@@ -187,7 +187,6 @@ export function preFetchImage(urls: Array<string>) : Promise<void> {
         const uri = android.net.Uri.parse(url);
         const prefetchSubscriber = com.facebook.datasource.BaseDataSubscriber.extend({
           onNewResultImpl(dataSource) {
-            console.log('onNewResultImpl: '+url);
             counter++;
             if (counter===urls.length) { resolve(); }
           },
