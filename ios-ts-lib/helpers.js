@@ -56,7 +56,7 @@ var Helpers = (function () {
     Helpers.getPlaceholderUIImage = function (value) {
         if (types.isString(value)) {
             if (utils.isFileOrResourcePath(value)) {
-                return imageSource.fromFileOrResource(value).ios;
+                return imageSource.ImageSource.fromFileOrResourceSync(value).ios;
             }
         }
         return undefined;
