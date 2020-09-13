@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var types = require("tns-core-modules/utils/types");
 var utils = require("tns-core-modules/utils/utils");
-var imageSource = require("tns-core-modules/image-source");
+// var imageSource = require("tns-core-modules/image-source");
+import {  ImageSource } from "tns-core-modules/image-source";
 var Helpers = (function () {
     function Helpers() {
     }
@@ -35,7 +36,7 @@ var Helpers = (function () {
             }
             else if (utils.isFileOrResourcePath(value)) {
                 image.isLoading = true;
-                var source_1 = new imageSource.ImageSource();
+                var source_1 = new ImageSource();
                 if (0 === value.indexOf(utils.RESOURCE_PREFIX)) {
                     var path = value.substr(utils.RESOURCE_PREFIX.length);
                     source_1.fromResource(path).then(function () {
@@ -56,7 +57,7 @@ var Helpers = (function () {
     Helpers.getPlaceholderUIImage = function (value) {
         if (types.isString(value)) {
             if (utils.isFileOrResourcePath(value)) {
-                return imageSource.fromFileOrResource(value).ios;
+                return ImageSource.fromFileOrResource(value).ios;
             }
         }
         return undefined;
