@@ -4,8 +4,8 @@ import * as types from 'tns-core-modules/utils/types';
 import * as utils from 'tns-core-modules/utils/utils';
 import * as fs from 'tns-core-modules/file-system';
 import * as appSettings from 'tns-core-modules/application-settings';
-import * as imageSource from 'tns-core-modules/image-source';
-
+// import * as imageSource from 'tns-core-modules/image-source';
+import {  ImageSource } from "tns-core-modules/image-source";
 
 
 declare class UIViewContentMode {
@@ -53,7 +53,7 @@ export class Helpers {
         });
       } else if (utils.isFileOrResourcePath(value)) {
         image.isLoading = true;
-        let source: any = new imageSource.ImageSource();
+        let source: any = new ImageSource();
 
         if (0 === value.indexOf(utils.RESOURCE_PREFIX)) {
           let path = value.substr(utils.RESOURCE_PREFIX.length);
@@ -77,7 +77,7 @@ export class Helpers {
   public static getPlaceholderUIImage(value) {
     if (types.isString(value)) {
       if (utils.isFileOrResourcePath(value)) {
-        return imageSource.fromFileOrResource(value).ios;
+        return ImageSource.fromFileOrResource(value).ios;
       }
     }
 
