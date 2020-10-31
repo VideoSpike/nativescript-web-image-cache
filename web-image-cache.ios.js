@@ -145,7 +145,7 @@ function preFetchImage(urls) {
             reject("preFetchImage: param should be array of urls");
         }
         else {
-            SDWebImagePrefetcher.sharedImagePrefetcher().prefetchURLsProgressCompleted(urls, null, function (finishedCount, skippedCount) {
+            SDWebImagePrefetcher.sharedImagePrefetcher.prefetchURLsProgressCompleted(urls, null, function (finishedCount, skippedCount) {
                 resolve();
             });
         }

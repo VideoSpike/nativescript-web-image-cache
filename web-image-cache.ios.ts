@@ -213,7 +213,7 @@ export function preFetchImage(urls: Array<string>) : Promise<void> {
     if (!urls || !Array.isArray(urls) || urls.length<1) {
       reject(`preFetchImage: param should be array of urls`);
     } else {
-      SDWebImagePrefetcher.sharedImagePrefetcher().prefetchURLsProgressCompleted(urls, null, (finishedCount, skippedCount) => {
+      SDWebImagePrefetcher.sharedImagePrefetcher.prefetchURLsProgressCompleted(urls, null, (finishedCount, skippedCount) => {
         resolve();
       });
     }
