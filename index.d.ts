@@ -47,3 +47,9 @@ export function initializeOnAngular(): void;
  * @param days : limit of the cache
  */
 export function setCacheLimit(days: number): void;
+
+/**
+ * To prefetch images to allow loading before using the images
+ * @param days : array of URLs to prefetch
+ */
+export function preFetchImage(urls:Array<string>) : Promise<void>;

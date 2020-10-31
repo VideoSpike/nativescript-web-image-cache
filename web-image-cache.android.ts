@@ -175,3 +175,43 @@ export function clearCache() {
 export function initializeOnAngular() {
   throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
 }
+
+export function preFetchImage(urls: Array<string>) : Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (!urls || !Array.isArray(urls) || urls.length<1) {
+      reject(`preFetchImage: param should be array of urls`);
+    } else {
+      let counter:number=0;
+
+      urls.forEach((url) => {
+        const uri = android.net.Uri.parse(url);
+        const prefetchSubscriber = com.facebook.datasource.BaseDataSubscriber.extend({
+          onNewResultImpl(dataSource) {
+            counter++;
+            if (counter===urls.length) { resolve(); }
+          },
+          onFailureImpl(dataSource) {
+            counter++;
+            if (counter===urls.length) {
+              reject(`preFetchImage: failed to prefetch ${uri.toString()}`);
+            }
+          }
+        });
+
+        /*
+          prefetchToDiskCache() --> load to disk slower but less CPU
+          prefetchToBitmapCache --> load to memory cache, faster but more CPU
+        */
+        let dataSource = com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline().prefetchToBitmapCache(
+          com.facebook.imagepipeline.request.ImageRequest.fromUri(uri),
+          application.android.context
+        );
+
+        dataSource.subscribe(
+          new prefetchSubscriber(),
+          com.facebook.common.executors.UiThreadImmediateExecutorService.getInstance()
+        );
+      });
+    }
+  });
+}

@@ -77,7 +77,7 @@ export class Helpers {
   public static getPlaceholderUIImage(value) {
     if (types.isString(value)) {
       if (utils.isFileOrResourcePath(value)) {
-        return imageSource.fromFileOrResource(value).ios;
+        return imageSource.ImageSource.fromFileOrResourceSync(value).ios;
       }
     }
 

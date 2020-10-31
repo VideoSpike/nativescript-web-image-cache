@@ -1,11 +1,19 @@
 declare namespace com {
   export namespace facebook {
     export namespace datasource {
+      export class BaseDataSubscriber {
+        public static extend(param: any);
+      }
       export class DataSource { }
     }
     export namespace common {
       export namespace references {
         export class CloseableReference { }
+      }
+      export namespace executors {
+        export class UiThreadImmediateExecutorService {
+          public static getInstance() : any;
+        }
       }
       export namespace internal {
         export class Supplier { }
@@ -18,7 +26,9 @@ declare namespace com {
         export class ImagePipeline { }
       }
       export namespace request {
-        export class ImageRequest { }
+        export class ImageRequest {
+          public static fromUri(param0: any): any;
+        }
       }
       export namespace image {
         export class ImageInfo { }

@@ -165,3 +165,20 @@ Default cache purge time can be specified in number of days.
 
 
 **for android, you need to initialize in the application onlaunch event before clearing the cache**
+
+### Prefetching images
+
+It is possible to prefetch images so that they are already loaded in the cache before use.
+
+```
+let urls = [
+  url1,
+  url2
+]
+
+preFetchImage(urls)
+.then(() => { console.log('prefetch success!'); })
+.catch((error) => { console.error('prefetch error: '+error); });
+```
+
+** note: on iOS calling preFetchImage multiple times before the promise resolves will cancel previous calls

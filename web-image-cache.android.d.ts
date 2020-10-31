@@ -13,3 +13,4 @@ export declare function setCacheLimit(numberOfDays: any): void;
 export declare function initialize(): void;
 export declare function clearCache(): void;
 export declare function initializeOnAngular(): void;
+export declare function preFetchImage(urls: Array<string>): Promise<void>;

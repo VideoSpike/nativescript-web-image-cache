@@ -1,13 +1,9 @@
 /* Include.gradle configuration: http://docs.nativescript.org/plugins/plugins#includegradle-specification */
 
 android {
-	productFlavors {
-		"nativescript-web-image-cache" {
-			dimension "nativescript-web-image-cache"
-		}
-	}
+	
 }
 
 dependencies {
-	compile "com.facebook.fresco:fresco:1.10.0"
+	compile "com.facebook.fresco:fresco:2.3.0"
 }
