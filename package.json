@@ -1,28 +1,4 @@
 {
-  "_from": "nativescript-web-image-cache",
-  "_id": "nativescript-web-image-cache@4.2.6",
-  "_inBundle": false,
-  "_integrity": "sha512-zIFzI09vBuQcODCdxuDgtBWmtTxNSxm06win+IU7t2zblk2ItdGawDbwd0ZLX9RN+moUf/ytTj+MMoBgowdt6Q==",
-  "_location": "/nativescript-web-image-cache",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "tag",
-    "registry": true,
-    "raw": "nativescript-web-image-cache",
-    "name": "nativescript-web-image-cache",
-    "escapedName": "nativescript-web-image-cache",
-    "rawSpec": "",
-    "saveSpec": null,
-    "fetchSpec": "latest"
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/nativescript-web-image-cache/-/nativescript-web-image-cache-4.2.4.tgz",
-  "_shasum": "acc14c6684fc2dd7481a66f1f01a98b00e1ce62d",
-  "_spec": "nativescript-web-image-cache",
-  "_where": "/Users/Sumeet/smg/gudds/NKY/ns/sample",
   "author": {
     "name": "Batheja Sumeet"
   },
@@ -61,7 +37,9 @@
     "type": "git",
     "url": "git+https://github.com/VideoSpike/nativescript-web-image-cache.git"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "./node_modules/.bin/tsc"
+  },
   "typings": "web-image-cache.d.ts",
   "version": "5.0.0"
 }

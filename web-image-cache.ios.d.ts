@@ -13,3 +13,4 @@ export declare class WebImage extends WebImageCommon {
 export declare function setCacheLimit(numberOfDays: any): void;
 export declare function clearCache(): void;
 export declare function initializeOnAngular(): void;
+export declare function preFetchImage(urls: Array<string>): Promise<void>;

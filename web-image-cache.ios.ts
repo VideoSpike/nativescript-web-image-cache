@@ -23,6 +23,10 @@ declare class UIViewContentMode {
   static UIViewContentModeScaleAspectFill: any;
 }
 
+declare class SDWebImagePrefetcher {
+  static sharedImagePrefetcher: any;
+}
+
 
 let placeholderProperty = new Property<WebImageCommon, string>({
   name: "placeholder",
@@ -202,4 +206,16 @@ export function clearCache() {
 
 export function initializeOnAngular() {
   throw new Error("'initializeOnAngular' has been removed from 'nativescript-web-image-cache', see its readme for details!");
+}
+
+export function preFetchImage(urls: Array<string>) : Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (!urls || !Array.isArray(urls) || urls.length<1) {
+      reject(`preFetchImage: param should be array of urls`);
+    } else {
+      SDWebImagePrefetcher.sharedImagePrefetcher.prefetchURLsProgressCompleted(urls, null, (finishedCount, skippedCount) => {
+        resolve();
+      });
+    }
+  });
 }
